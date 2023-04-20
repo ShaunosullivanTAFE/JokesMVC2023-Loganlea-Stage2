@@ -1,0 +1,38 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.back-colour-0 {background-color: var(--colour-0) !important }
+.back-colour-1 {background-color: var(--colour-1) !important }
+.back-colour-2 {background-color: var(--colour-2) !important }
+.back-colour-3 {background-color: var(--colour-3) !important }
+.back-colour-4 {background-color: var(--colour-4) !important }
+
+.colour-0 {color: var(--colour-0) !important }
+.colour-1 {color: var(--colour-1) !important }
+.colour-2 {color: var(--colour-2) !important }
+.colour-3 {color: var(--colour-3) !important }
+.colour-4 {color: var(--colour-4) !important }
+.text-colour {color: var(--text-colour) !important}
+
+a {
+    color: var(--text-colour)
+}
+    a:link {
+        color: var(--text-colour)
+    }
