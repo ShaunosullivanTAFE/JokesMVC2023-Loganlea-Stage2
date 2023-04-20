@@ -48,23 +48,29 @@
 
     function deleteConfirm(id){
         if(confirm("Delete Joke with ID: " + id + "?")){
-            console.log('Deleted!')
-            // Send a fetch DELETE request to an endpoint
-            // await fetch('',{
-            //  
-            // })
+            // Delete Joke
         }
     }
 
-    function startTimer(){
-        setInterval(updateTable, 1000);
-    }
+
+    /*
+    * The method below will retrieve the rendered HTML for the Joke Table via a fetch request
+    * The data within the response will be extracted as text.
+    * This 'text' will then replace the 'innerHTML' of the container div
+    */
 
     async function updateTable(){
         var result = await fetch("/Joke/JokeTablePartial");
         var htmlResult = await result.text();
         document.getElementById('JokeTableContainer').innerHTML = htmlResult;
     }
+
+    /*
+    * The method below follows the same pattern as the 'updatedTable' method,
+    * however, this also adds an event listener to the newly rendered form that allows for intercepting
+    * the 'submit' event and posting the form data. This 'submit' handler should be extracted into a separate
+    * method for readability
+    */
 
     async function showCreateModal(){
         // Fetch the required partial view
@@ -79,18 +85,19 @@
         var form = document.querySelector("form[action='/Joke/Create']")
 
         form.addEventListener('submit', async (e) => {
+
+            // Prevent the regular behavious of the form (stops it posting to the server)
             e.preventDefault();
             
-            // validate the form
-
-            // POST the form data as a JSON object
+            // TODO - validate the form
+             
+            // restructure the form data as a JSON object
             let jokeCreate = {
                 JokeQuestion: e.target["JokeQuestion"].value,
                 JokeAnswer: e.target["JokeAnswer"].value
             }
-
-            console.log(JSON.stringify(jokeCreate));
-
+            
+            // POST the JSON object (stringified) to the /Create endpoint
             let result = await fetch('/Joke/Create', {
                 method: "POST",
                 headers: {
@@ -99,9 +106,9 @@
                 body: JSON.stringify(jokeCreate)
             });
 
+            // Hide the Modal
             $('#createModal').modal('hide')
 
-            console.log(jokeCreate);
         })
 
         // show the modal
