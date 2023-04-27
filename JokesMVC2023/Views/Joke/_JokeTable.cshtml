@@ -9,7 +9,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.JokeAnswer)
             </th>
-            <th></th>
+            <th style="min-width:20vw"></th>
         </tr>
     </thead>
     <tbody>
@@ -22,10 +22,10 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.JokeAnswer)
                 </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <input type="button" class="btn" value="Delete" onclick="deleteConfirm(@item.Id)"/>
+                <td class="d-flex justify-content-around">
+                    <input type="button" class="btn btn-outline-success" value="Edit" onclick="showEditModal(@item.Id)"/>
+                    <input type="button" class="btn btn-outline-info" value="Details" onclick="showDetailsModal(@item.Id)"/>
+                    <input type="button" class="btn btn-outline-danger" value="Delete" onclick="deleteConfirm(@item.Id)"/>
                 </td>
             </tr>
         }

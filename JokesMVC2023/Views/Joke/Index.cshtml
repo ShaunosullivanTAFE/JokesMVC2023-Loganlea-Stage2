@@ -10,11 +10,8 @@
     <input type="button" class="btn btn-outline-danger" value="Update" onclick="startTimer()" />
 </p>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 
-<input type="button" value="Show Modal" class="btn btn-outline-primary" onclick="showCreateModal()" />
+<input type="button" value="Create Joke" class="btn btn-outline-primary" onclick="showCreateModal()" />
 
 <div id="JokeTableContainer">
     <partial name="_JokeTable.cshtml" />
@@ -46,9 +43,10 @@
 
 <script>
 
-    function deleteConfirm(id){
+    async function deleteConfirm(id){
         if(confirm("Delete Joke with ID: " + id + "?")){
-            // Delete Joke
+            let result = await fetch('/Joke/Delete?id=' + id, {method: 'DELETE'});
+            updateTable();
         }
     }
 
@@ -63,6 +61,50 @@
         var result = await fetch("/Joke/JokeTablePartial");
         var htmlResult = await result.text();
         document.getElementById('JokeTableContainer').innerHTML = htmlResult;
+    }
+
+    async function showEditModal(id){
+        let result = await fetch('/Joke/EditForm?id='+id);
+        let htmlResult = await result.text();
+        document.getElementById('modalBody').innerHTML = htmlResult;
+
+        let form = document.querySelector("form[action='/Joke/Edit']")
+        form.addEventListener('submit', async (e) => {handleEditSubmit(e, id)})
+
+        $('#createModal').modal('show')
+    }
+
+    async function handleEditSubmit(e, id){
+        e.preventDefault();
+
+        console.log(id)
+
+        let jokeEdit = {
+            id: id,
+            jokeQuestion: e.target["JokeQuestion"].value,
+            jokeAnswer: e.target["JokeAnswer"].value
+        }
+
+
+        let form = e.target;
+        let formResult = $(form);
+        formResult.validate();
+        console.log(formResult);
+
+        let result = await fetch('/Joke/Edit?id='+ id, {
+            method: 'PUT',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(jokeEdit)
+        })
+        console.log(result)
+
+        $('#createModal').modal('hide')
+
+        updateTable();
+
+
     }
 
     /*
@@ -91,6 +133,13 @@
             
             // TODO - validate the form
              
+            let form = e.target;
+            console.log(e.target)
+            let formResult = $(form);
+            console.log(formResult)
+            let validationResult = formResult.validate();
+            console.log(validationResult);
+
             // restructure the form data as a JSON object
             let jokeCreate = {
                 JokeQuestion: e.target["JokeQuestion"].value,
@@ -106,9 +155,11 @@
                 body: JSON.stringify(jokeCreate)
             });
 
+
             // Hide the Modal
             $('#createModal').modal('hide')
 
+            updateTable();
         })
 
         // show the modal
@@ -117,5 +168,9 @@
     }
 
 </script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
 
 

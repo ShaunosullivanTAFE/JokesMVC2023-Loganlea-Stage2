@@ -82,7 +82,7 @@ namespace JokesMVC2023.Controllers
         }
 
         // GET: JokeController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> EditForm(int id)
         {
             if (id == 0)
             {
@@ -91,45 +91,34 @@ namespace JokesMVC2023.Controllers
 
             var joke = _jokeContext.Jokes.FirstOrDefault(c => c.Id == id);
 
-            return joke != null ? View(joke) : RedirectToAction(nameof(Index));
+            return joke != null ? PartialView("_Edit", joke) : RedirectToAction(nameof(Index));
         }
 
         // POST: JokeController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, Joke joke)
+        [HttpPut]
+        //[ValidateAntiForgeryToken]
+        public ActionResult Edit([FromQuery]int id, [FromBody]Joke jokeEdit)
         {
-            if (id != joke.Id)
-            {
-                return NotFound();
-            }
+            //if (id != jokeEdit.Id)
+            //{
+            //    return NotFound();
+            //}
 
             if (ModelState.IsValid)
             {
-                _jokeContext.Jokes.Update(joke);
-
+                _jokeContext.Jokes.Update(jokeEdit);
+                _jokeContext.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
-            return View(joke);
+            return View(jokeEdit);
         }
 
-        // GET: JokeController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            if (id == 0)
-            {
-                return RedirectToAction(nameof(Index));
-            }
-
-            var joke = _jokeContext.Jokes.FirstOrDefault(c => c.Id == id);
-
-            return joke != null ? View(joke) : RedirectToAction(nameof(Index));
-        }
+       
 
         // POST: JokeController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        [HttpDelete]
+        //[ValidateAntiForgeryToken]
+        public ActionResult Delete(int id)
         {
             try
             {
