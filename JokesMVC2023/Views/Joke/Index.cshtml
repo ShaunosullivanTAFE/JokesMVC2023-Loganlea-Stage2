@@ -148,20 +148,30 @@
 
         var form = document.querySelector("form[action='/Joke/Create']")
 
+        /*
+        *   The magic sauce that brings together the automatic validation!
+        *   This is normally executed when the page is rendered, but as our form appears after the
+        *   initial page render, the form is never parsed by the unobtrusive package
+        * 
+        *   Triggering this here (not in the callback for the submit event) allows the form to be 
+        *   parsed before it is posted
+        */
+        $.validator.unobtrusive.parse(form);
+
         form.addEventListener('submit', async (e) => {
 
-            // Prevent the regular behavious of the form (stops it posting to the server)
+            // Prevent the regular behaviours of the form (stops it posting to the server)
             e.preventDefault();
 
+            // Retrieve a reference to the form
+            let formResult = $(e.target);
+            
+            // if the form is not valid, return (don't completed the code below)
+            if(!formResult.valid()){
+                return;
+            }
+
             startButtonSpinner();
-            // TODO - validate the form
-             
-            let form = e.target;
-            console.log(e.target)
-            let formResult = $(form);
-            console.log(formResult)
-            let validationResult = formResult.validate();
-            console.log(validationResult);
 
             // restructure the form data as a JSON object
             let jokeCreate = {
