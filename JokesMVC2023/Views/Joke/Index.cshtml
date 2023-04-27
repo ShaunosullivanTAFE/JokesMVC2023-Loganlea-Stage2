@@ -10,6 +10,7 @@
     <input type="button" class="btn btn-outline-danger" value="Update" onclick="startTimer()" />
 </p>
 
+<input type="button" value="Spinner" onclick="showSpinner()" class="btn btn-primary"/>
 
 <input type="button" value="Create Joke" class="btn btn-outline-primary" onclick="showCreateModal()" />
 
@@ -19,10 +20,11 @@
 
 
 
-<div class="modal fade" id="createModal" tabindex="-1">
+<div class="modal fade" id="genericModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <div class="modal-header">
+
         <h5 class="modal-title">Create Joke</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -32,20 +34,44 @@
   </div>
 </div>
 
-
-
-
-
-
-
-
-
+<div class="modal" id="spinnerModal" tabindex="-1" data-bs-backdrop="false">
+    <div class="modal-dialog modal-dialog-centered d-flex justify-content-center" >
+        <div class="spinner">
+            <div class="spinnerin"></div>
+        </div>
+    </div>
+</div>
 
 <script>
 
+    function showSpinner(){
+        $('#spinnerModal').modal('show')
+    }
+
+    function hideSpinner(){
+        $('#spinnerModal').modal('hide')
+    }
+
+    function startButtonSpinner(){
+        let button = document.getElementById("submitButton");
+        button.setAttribute('disabled', 'disabled')
+        button.innerHTML = `
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Loading....
+        `;
+    }
+
+    function stopButtonSpinner(){
+        let button = document.getElementById("submitButton");
+        button.removeAttribute('disabled')
+        button.innerHTML = "Create"
+    }
+
     async function deleteConfirm(id){
         if(confirm("Delete Joke with ID: " + id + "?")){
+            showSpinner()
             let result = await fetch('/Joke/Delete?id=' + id, {method: 'DELETE'});
+            hideSpinner()
             updateTable();
         }
     }
@@ -68,10 +94,12 @@
         let htmlResult = await result.text();
         document.getElementById('modalBody').innerHTML = htmlResult;
 
+        document.getElementsByClassName('modal-title')[0].innerHTML = 'Edit Joke'
+
         let form = document.querySelector("form[action='/Joke/Edit']")
         form.addEventListener('submit', async (e) => {handleEditSubmit(e, id)})
 
-        $('#createModal').modal('show')
+        $('#genericModal').modal('show')
     }
 
     async function handleEditSubmit(e, id){
@@ -85,12 +113,6 @@
             jokeAnswer: e.target["JokeAnswer"].value
         }
 
-
-        let form = e.target;
-        let formResult = $(form);
-        formResult.validate();
-        console.log(formResult);
-
         let result = await fetch('/Joke/Edit?id='+ id, {
             method: 'PUT',
             headers: {
@@ -98,9 +120,8 @@
             },
             body: JSON.stringify(jokeEdit)
         })
-        console.log(result)
 
-        $('#createModal').modal('hide')
+        $('#genericModal').modal('hide')
 
         updateTable();
 
@@ -123,6 +144,7 @@
 
         // set the modal body to the returned html
         document.getElementById('modalBody').innerHTML = htmlResult;
+        document.getElementsByClassName('modal-title')[0].innerHTML = 'Create Joke'
 
         var form = document.querySelector("form[action='/Joke/Create']")
 
@@ -130,7 +152,8 @@
 
             // Prevent the regular behavious of the form (stops it posting to the server)
             e.preventDefault();
-            
+
+            startButtonSpinner();
             // TODO - validate the form
              
             let form = e.target;
@@ -155,16 +178,34 @@
                 body: JSON.stringify(jokeCreate)
             });
 
+            if(result.status === 201){
+                $('#genericModal').modal('hide')
+                updateTable();
+                console.log("Joke Created")
+            } else{
+                let test = await result.text();
+                stopButtonSpinner();
+                alert(result.status + ' ' + test)
+            }
 
-            // Hide the Modal
-            $('#createModal').modal('hide')
 
-            updateTable();
         })
 
         // show the modal
-        $('#createModal').modal('show')
+        $('#genericModal').modal('show')
 
+    }
+
+    async function showDetailsModal(id){
+
+        let result = await fetch('/Joke/Details?id=' + id);
+
+        let htmlResult = await result.text();
+
+        document.getElementById('modalBody').innerHTML = htmlResult;
+        document.getElementsByClassName('modal-title')[0].innerHTML = 'Joke Details'
+
+        $('#genericModal').modal('show')
     }
 
 </script>

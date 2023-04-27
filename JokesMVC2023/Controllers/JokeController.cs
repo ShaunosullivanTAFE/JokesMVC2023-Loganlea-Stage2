@@ -54,22 +54,26 @@ namespace JokesMVC2023.Controllers
                 // simple error handling
                 if (ModelState.IsValid)
                 {
+                    Thread.Sleep(2000);
                     _jokeContext.Jokes.Add(new Joke { JokeQuestion = jokeCreate.JokeQuestion, JokeAnswer = jokeCreate.JokeAnswer });
                     _jokeContext.SaveChanges();
-                    return RedirectToAction(nameof(Index));
+                    return Created("/Joke/Create", jokeCreate);
                 }
                 else
                 {
-                    return View();
+                    return BadRequest("Validation Failed");
                 }
             }
             catch
             {
-                return View();
+                return Problem("An error has occured");
             }
         }
+
+
+
         // GET: JokeController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details([FromQuery] int id)
         {
             if(id == 0)
             {
@@ -78,8 +82,12 @@ namespace JokesMVC2023.Controllers
 
             var joke = _jokeContext.Jokes.FirstOrDefault(c => c.Id == id);
 
-            return joke != null ? View(joke) : RedirectToAction(nameof(Index));
+            return joke != null ? PartialView("_Details", joke) : RedirectToAction(nameof(Index));
         }
+
+
+
+
 
         // GET: JokeController/Edit/5
         public async Task<ActionResult> EditForm(int id)
@@ -125,6 +133,7 @@ namespace JokesMVC2023.Controllers
                 var joke = _jokeContext.Jokes.FirstOrDefault(c => c.Id == id);
                 if (joke != null)
                 {
+                    //Thread.Sleep(3000);
                     _jokeContext.Jokes.Remove(joke);
                     _jokeContext.SaveChanges();
                     return RedirectToAction(nameof(Index));
