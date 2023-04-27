@@ -38,3 +38,36 @@ async function switchTheme() {
         document.getElementById('themeStyle').setAttribute('href', '/css/LightTheme.css')
     }
 }
+
+function ShowToast(text, duration, type){
+
+    let backgroundColour;
+
+    switch(type){
+        case 'error':
+            backgroundColour = "linear-gradient(to right, #EC4B61, #B40D24)";
+            break;
+        case 'success':
+            backgroundColour = "linear-gradient(to right, #3FC63F, #0B980B)";
+            break;
+        case 'default':
+            backgroundColour = "linear-gradient(to right, #7D68C1, #301782)";
+            break;
+    }
+
+
+    Toastify({
+        text: text,
+        duration: duration,
+        newWindow: true,
+        close: false,
+        gravity: "top",
+        position: "left",
+        stopOnFocus: true,
+        style: {
+            background: backgroundColour
+        },
+        onclick: function() {}
+    }).showToast();
+
+}

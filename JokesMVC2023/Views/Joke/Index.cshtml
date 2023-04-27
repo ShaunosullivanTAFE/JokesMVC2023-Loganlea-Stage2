@@ -181,11 +181,12 @@
             if(result.status === 201){
                 $('#genericModal').modal('hide')
                 updateTable();
-                console.log("Joke Created")
+                ShowToast('Joke Created', 2000, "success")
+
             } else{
                 let test = await result.text();
                 stopButtonSpinner();
-                alert(result.status + ' ' + test)
+                ShowToast(test, 2000, "error")
             }
 
 
