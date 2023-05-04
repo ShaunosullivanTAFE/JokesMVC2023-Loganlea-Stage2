@@ -97,6 +97,9 @@
         document.getElementsByClassName('modal-title')[0].innerHTML = 'Edit Joke'
 
         let form = document.querySelector("form[action='/Joke/Edit']")
+
+        $.validator.unobtrusive.parse(form);
+
         form.addEventListener('submit', async (e) => {handleEditSubmit(e, id)})
 
         $('#genericModal').modal('show')
@@ -104,6 +107,12 @@
 
     async function handleEditSubmit(e, id){
         e.preventDefault();
+
+        var form = $(e.target)
+
+        if(!form.valid()){
+            return;
+        }
 
         console.log(id)
 
@@ -148,20 +157,24 @@
 
         var form = document.querySelector("form[action='/Joke/Create']")
 
+        $.validator.unobtrusive.parse(form);
+
         form.addEventListener('submit', async (e) => {
 
             // Prevent the regular behavious of the form (stops it posting to the server)
             e.preventDefault();
 
-            startButtonSpinner();
+            
             // TODO - validate the form
              
             let form = e.target;
             console.log(e.target)
             let formResult = $(form);
-            console.log(formResult)
-            let validationResult = formResult.validate();
-            console.log(validationResult);
+            
+            if(!formResult.valid()){
+                return;
+            }
+            startButtonSpinner();
 
             // restructure the form data as a JSON object
             let jokeCreate = {
