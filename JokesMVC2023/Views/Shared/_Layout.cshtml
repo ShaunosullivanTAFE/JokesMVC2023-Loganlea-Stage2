@@ -1,5 +1,6 @@
 ﻿@{
     string? theme = Context?.Session.GetString("theme");
+    int? id = Context?.Session.GetInt32("ID");
 }
 
 <!DOCTYPE html>
@@ -51,6 +52,14 @@
                             <a class="nav-link text-colour" asp-area="" asp-controller="Joke" asp-action="Index">Jokes</a>
                         </li>
                     </ul>
+                    @if (id.HasValue)
+                    {
+                        <span class="me-1">@id</span>
+                    }
+                    <a asp-action="Login" class="btn btn-primary me-1">Login</a>
+                    <a asp-action="Register" class="btn btn-info me-1">Register</a>
+                    <a asp-action="Logout" class="btn btn-danger">Logout</a>
+
                     <input type="button" value="Switch Theme" class="btn" id="btnSwitchTheme" onclick="switchTheme()" />
                 </div>
             </div>
