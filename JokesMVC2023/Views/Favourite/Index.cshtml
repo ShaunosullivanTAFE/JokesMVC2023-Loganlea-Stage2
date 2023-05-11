@@ -14,7 +14,7 @@
                     </select>   
                 </div>
                 <div class="col-sm-2">
-                    <input type="button" class="btn btn-primary w-100" value="+" />
+                    <input type="button" class="btn btn-primary w-100" value="+" onclick="$('#createListModal').modal('show')" />
                 </div>
             </div>
             
@@ -27,11 +27,54 @@
     </div>
 </div>
 
+<div class="modal fade" id="createListModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <h5 class="modal-title">Create List</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+
+                <form id="createListForm">
+                    <input type="text" name="listName" class="form-control"/>
+                    <input type="submit" value="Add List" class="btn btn-success" />
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 
     window.addEventListener('load', async (e) => {
         setFavouriteDDL();
+        document.getElementById("createListForm").addEventListener('submit', async (e) => { 
+            await handleCreateList(e);
+        })
     })
+
+    async function handleCreateList(e){
+        e.preventDefault();
+
+        console.log(e.target["listName"].value);
+
+        let result = await fetch('/Favourite/AddNewList', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(e.target["listName"].value)
+        });
+
+        if(result.ok){
+            await setFavouriteDDL();
+            $('#createListModal').modal('hide');
+        }
+
+    }
 
     async function setFavouriteDDL(){
 

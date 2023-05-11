@@ -46,5 +46,33 @@ namespace JokesMVC2023.Controllers
             // Create a partial view that renders a DDL
             return PartialView("_FavouriteListDDL");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> AddNewList([FromBody] string listName)
+        {
+
+            // retrieve ID from session
+            int? id = HttpContext?.Session?.GetInt32("ID");
+            if (!id.HasValue)
+            {
+                return Unauthorized();
+            }
+
+            if(_context.FavouriteLists.Any(c => c.Name == listName && c.UserId == id)) 
+            {
+                return BadRequest();
+            }
+
+            FavouriteList newList = new FavouriteList()
+            {
+                Name = listName,
+                UserId = id.Value
+            };
+            _context.FavouriteLists.Add(newList);
+            _context.SaveChanges();
+
+            return Ok();
+        }
+    
     }
 }
