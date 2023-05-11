@@ -21,7 +21,7 @@
         </div>
     </div>
     <div class="p-2">
-        <div class="card shadow" style="min-height: 40vh">
+        <div class="card shadow" id="jokeContainer" style="min-height: 40vh">
 
         </div>
     </div>
@@ -56,6 +56,32 @@
         })
     })
 
+    async function removeJoke(jokeId){
+        let listID = sessionStorage.getItem("listID");
+
+        let favListItem = {
+            FavouriteListId: listID,
+            JokeId: jokeId
+        }
+
+        let result = await fetch('/Favourite/RemoveJokeFromList', {
+            method: 'DELETE',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(favListItem)
+        });
+        if(result.ok){
+            // Update Joke Table
+
+            let result = await fetch('/Favourite/GetJokesForList?listID=' + listID);
+            let htmlResult = await result.text();
+            document.getElementById('jokeContainer').innerHTML = htmlResult
+        }
+
+        console.log(favListItem);
+    }
+
     async function handleCreateList(e){
         e.preventDefault();
 
@@ -82,5 +108,21 @@
         let htmlResult = await result.text();
         document.getElementById('dropdownContainer').innerHTML = htmlResult
         
+        let ddlContainer = document.getElementById('dropdownContainer');
+        let ddl = ddlContainer.querySelector('select');
+        ddl.addEventListener('change', async (e) => {
+            handleDDLChange(e);
+        })
+
+    }
+
+    async function handleDDLChange(e){
+        let selectedOption = e.target.selectedOptions[0]
+        sessionStorage.setItem('listID', selectedOption.value)
+        sessionStorage.setItem('listName', selectedOption.text)
+
+        let result = await fetch('/Favourite/GetJokesForList?listID=' + selectedOption.value);
+        let htmlResult = await result.text();
+        document.getElementById('jokeContainer').innerHTML = htmlResult
     }
 </script>

@@ -1,6 +1,7 @@
 ﻿using JokesMVC2023.Models.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace JokesMVC2023.Controllers
 {
@@ -73,6 +74,36 @@ namespace JokesMVC2023.Controllers
 
             return Ok();
         }
-    
+
+        public async Task<IActionResult> GetJokesForList([FromQuery]int listID)
+        {
+
+
+            List<Joke> jokes = _context.FavouriteListItems.Include(c => c.Joke)
+                                                                 .Where(c => c.FavouriteListId == listID)
+                                                                 .Select(c => c.Joke)
+                                                                 .ToList();
+
+
+
+            return PartialView("_JokesForListPartial", jokes);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> RemoveJokeFromList([FromBody] FavouriteListItem item)
+        {
+            var favListItem = _context.FavouriteListItems.Where(c => c.FavouriteListId == item.FavouriteListId && c.JokeId == item.JokeId)
+                                                         .FirstOrDefault();
+
+            if(favListItem != null)
+            {
+                _context.FavouriteListItems.Remove(favListItem);
+                _context.SaveChanges();
+                return Ok();
+            }
+            return BadRequest();            
+        }
+
+
     }
 }
