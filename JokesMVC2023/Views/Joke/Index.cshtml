@@ -42,7 +42,76 @@
     </div>
 </div>
 
+<div class="modal fade" id="addJokeToListModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <h5 class="modal-title">Add Joke To List</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+
+                <form id="addJokeToListForm">
+                    <div class="row justify-content-evenly">
+                        <div class="col-6" id="ddlContainer">
+                            <select class="form-select" disabled>
+                                <option>Loading....</option>
+                            </select>
+                        </div>
+                        <div class="col-3">
+                            <input type="submit" value="Add Joke" class="btn btn-success" />
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+
+    async function addToFavourites(jokeId) {
+
+        $('#addJokeToListModal').modal('show');
+
+        let result = await fetch('/Favourite/GetFavouriteListDDL');
+        let resultHtml = await result.text();
+        document.getElementById('ddlContainer').innerHTML = resultHtml;
+
+        document.getElementById('addJokeToListForm').addEventListener('submit', async (e) => {
+            handleAddJokeToList(e, jokeId);
+        })
+    }
+
+    async function handleAddJokeToList(e, jokeId){
+        e.preventDefault();
+
+        let listID = e.target['favouriteList'].selectedOptions[0].value
+
+        if(listID == 0) { return; }
+
+        let favListItem = {
+            FavouriteListId: listID,
+            JokeId: jokeId
+        }
+
+        let result = await fetch('/Favourite/AddJokeToList', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(favListItem)
+        });
+
+        if(result.ok){
+            $('#addJokeToListModal').modal('hide');
+        } else {
+            alert('The selected list already contains this joke')
+        }
+
+    }
 
     function showSpinner(){
         $('#spinnerModal').modal('show')

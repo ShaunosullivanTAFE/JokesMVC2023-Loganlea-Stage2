@@ -104,6 +104,19 @@ namespace JokesMVC2023.Controllers
             return BadRequest();            
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddJokeToList([FromBody] FavouriteListItem item)
+        {
+            if(_context.FavouriteListItems.Any(c => c.FavouriteListId == item.FavouriteListId && c.JokeId == item.JokeId))
+            {
+                return BadRequest();
+            }
+
+            _context.FavouriteListItems.Add(item);
+            _context.SaveChanges();
+            return Ok();
+        }
+
 
     }
 }
