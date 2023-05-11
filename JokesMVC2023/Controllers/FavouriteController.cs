@@ -117,6 +117,62 @@ namespace JokesMVC2023.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> FilteredDDLPartial(int jokeID)
+        {
+            // retrieve ID from session
+            int? id = HttpContext?.Session?.GetInt32("ID");
+            if (!id.HasValue)
+            {
+                return Unauthorized();
+            }
 
+            // Could be expanded to be easier to read
+            var validLists = _context.FavouriteLists.Include(c => c.ListItems)
+                                                    .Where(c => c.UserId == id.Value && !c.ListItems.Any(d => d.JokeId == jokeID))
+                                                    .Select(c => new SelectListItem()
+                                                    {
+                                                        Text = c.Name,
+                                                        Value = c.Id.ToString()
+                                                    }).ToList();
+
+
+            
+            #region verboseSolution
+
+            var validListsClear = _context.FavouriteLists.Include(c => c.ListItems).Where(c => c.UserId == id.Value).ToList();
+
+            var viableLists = new List<FavouriteList>();
+
+            foreach(var list in validListsClear)
+            {
+                bool validList = true;
+                foreach(var item in list.ListItems) 
+                {
+                    if(item.JokeId == jokeID)
+                    {
+                        // jump out of this Loop 
+                        validList = false;
+                        break;
+                    }
+                }
+                if(validList)
+                {
+                    viableLists.Add(list);
+                }
+            }
+
+            var selectList = viableLists.Select(c => new SelectListItem
+            {
+                Text = c.Name,
+                Value = c.Id.ToString()
+            }).ToList();
+
+            #endregion
+
+            ViewBag.FavouriteLists = validLists;
+
+            return PartialView("_FavouriteListDDL");
+        }
     }
 }

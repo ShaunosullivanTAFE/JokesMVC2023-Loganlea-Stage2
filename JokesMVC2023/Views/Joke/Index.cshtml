@@ -6,13 +6,19 @@
 
 <h1>Index</h1>
 
-<p>
-    <input type="button" class="btn btn-outline-danger" value="Update" onclick="startTimer()" />
-</p>
 
-<input type="button" value="Spinner" onclick="showSpinner()" class="btn btn-primary"/>
 
-<input type="button" value="Create Joke" class="btn btn-outline-primary" onclick="showCreateModal()" />
+<div class="row justify-content-evenly border shadow rounded my-2 p-2">
+    <div class="col-2 me-2 text-center">
+        <input type="button" value="Create Joke" class="btn btn-outline-primary" onclick="showCreateModal()" /> 
+    </div>
+    <div class="col text-center">
+        <input type="text" class="form-control" id="searchInput" placeholder="Search by Question or Answer" />
+    </div>
+    <div class="col-2 text-center">
+        <input type="button" value="clear" class="btn btn-primary w-100" onclick="searchReset()" />
+    </div>
+</div>
 
 <div id="JokeTableContainer">
     <partial name="_JokeTable.cshtml" />
@@ -72,12 +78,29 @@
 
 <script>
 
+    window.addEventListener('load', async (e) => {
+        document.getElementById('searchInput').addEventListener('input', async (e) => {
+            handleJokeSearch(e);
+        })
+    })
+
+    async function handleJokeSearch(e){
+        
+        let searchText = e.target.value;
+
+        console.log(searchText);
+        let result = await fetch('/Joke/GetJokesForSearch?query=' + searchText);
+        let htmlResult = await result.text();
+        document.getElementById('JokeTableContainer').innerHTML = htmlResult;
+    }
+
     async function addToFavourites(jokeId) {
 
         $('#addJokeToListModal').modal('show');
 
-        let result = await fetch('/Favourite/GetFavouriteListDDL');
+        let result = await fetch('/Favourite/FilteredDDLPartial?jokeID=' + jokeId);
         let resultHtml = await result.text();
+        console.log(resultHtml)
         document.getElementById('ddlContainer').innerHTML = resultHtml;
 
         document.getElementById('addJokeToListForm').addEventListener('submit', async (e) => {
@@ -89,6 +112,8 @@
         e.preventDefault();
 
         let listID = e.target['favouriteList'].selectedOptions[0].value
+
+        console.log(listID)
 
         if(listID == 0) { return; }
 

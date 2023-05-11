@@ -31,6 +31,19 @@ namespace JokesMVC2023.Controllers
             return PartialView("_JokeTable", _jokeContext.Jokes.AsEnumerable());
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetJokesForSearch(string query = "")
+        {
+            var jokeQueryable = _jokeContext.Jokes.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                jokeQueryable = jokeQueryable.Where(c => c.JokeQuestion.Contains(query) || c.JokeAnswer.Contains(query));
+            }
+
+            return PartialView("_JokeTable", jokeQueryable.ToList());
+        }
+
         /*
          * The pair of create methods below are both utilised by a fetch client to first retrieve 
          * the HTML required to display an empty create form.
