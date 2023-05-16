@@ -118,6 +118,27 @@ namespace JokesMVC2023.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetNewJokesForSearch(string query, int listID)
+        {
+            var jokeIDs = _context.FavouriteListItems.Include(c => c.Joke).Where(c => c.FavouriteListId == listID).Select(c => c.Joke).ToList();
+            
+            var filteredJokes = _context.Jokes.Where(c => c.JokeQuestion.Contains(query) || c.JokeAnswer.Contains(query)).ToList();
+
+            List<Joke> filteredJokeList = new List<Joke>();
+
+            foreach(var joke in filteredJokes)
+            {
+                if (!jokeIDs.Any(c => c.Id == joke.Id))
+                {
+                    filteredJokeList.Add(joke);
+                    continue;
+                }
+
+            }
+            return PartialView("_JokesForListPartial", filteredJokeList);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> FilteredDDLPartial(int jokeID)
         {
             // retrieve ID from session
