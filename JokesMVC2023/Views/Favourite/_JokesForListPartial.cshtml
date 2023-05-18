@@ -23,7 +23,7 @@
                     @Html.DisplayFor(modelItem => item.JokeAnswer)
                     </td>
                     <td class="d-flex justify-content-around">
-                        <input type="button" class="btn btn-outline-danger" value="Remove" onclick="removeJoke(@item.Id)"/>
+                        <input type="button" class="btn btn-outline-danger" value="Remove" data-value="@item.Id" />
                        
                     </td>
                 </tr>

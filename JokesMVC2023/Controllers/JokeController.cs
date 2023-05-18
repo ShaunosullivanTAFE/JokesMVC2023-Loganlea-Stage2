@@ -26,9 +26,16 @@ namespace JokesMVC2023.Controllers
          */
 
         [HttpGet]
-        public async Task<ActionResult> JokeTablePartial()
+        public async Task<ActionResult> JokeTablePartial(string query = "")
         {
-            return PartialView("_JokeTable", _jokeContext.Jokes.AsEnumerable());
+            var jokeList = _jokeContext.Jokes.AsQueryable();
+
+            if (!String.IsNullOrEmpty(query))
+            {
+                jokeList = jokeList.Where(c => c.JokeQuestion.Contains(query) || c.JokeAnswer.Contains(query));
+            }
+
+            return PartialView("_JokeTable", jokeList.ToList());
         }
 
         /*
