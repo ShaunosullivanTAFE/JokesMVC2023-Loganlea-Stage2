@@ -53,7 +53,7 @@ namespace JokesMVC2023.Controllers
 
         // POST: JokeController/Create
         [HttpPost]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public ActionResult Create([FromBody] JokeCreateDTO jokeCreate)
         {
             try
@@ -111,7 +111,7 @@ namespace JokesMVC2023.Controllers
 
         // POST: JokeController/Edit/5
         [HttpPut]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit([FromQuery]int id, [FromBody]Joke jokeEdit)
         {
             //if (id != jokeEdit.Id)
@@ -132,7 +132,7 @@ namespace JokesMVC2023.Controllers
 
         // POST: JokeController/Delete/5
         [HttpDelete]
-        //[ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]
         public ActionResult Delete(int id)
         {
             try

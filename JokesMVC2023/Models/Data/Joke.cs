@@ -19,6 +19,6 @@ namespace JokesMVC2023.Models.Data
         [Display(Name="Joke Answer")]
         public string JokeAnswer { get; set; }
 
-        public ICollection<FavouriteListItem> ListItems { get; set; }
+        public ICollection<FavouriteListItem>? ListItems { get; set; }
     }
 }

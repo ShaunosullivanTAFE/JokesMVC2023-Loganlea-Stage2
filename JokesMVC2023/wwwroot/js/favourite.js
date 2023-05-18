@@ -15,7 +15,7 @@ async function removeJoke(e) {
         JokeId: jokeId
     }
 
-    let result = await fetch('/Favourite/RemoveJokeFromList', {
+    let result = await advFetch('/Favourite/RemoveJokeFromList', {
         method: 'DELETE',
         headers: {
             'content-type': 'application/json'
@@ -36,7 +36,7 @@ async function handleCreateList(e) {
 
     console.log(e.target["listName"].value);
 
-    let result = await fetch('/Favourite/AddNewList', {
+    let result = await advFetch('/Favourite/AddNewList', {
         method: 'POST',
         headers: {
             'content-type': 'application/json'
@@ -52,7 +52,7 @@ async function handleCreateList(e) {
 }
 
 async function updateJokeFavouriteList(listId) {
-    let result = await fetch('/Favourite/GetJokesForList?listID=' + listId);
+    let result = await advFetch('/Favourite/GetJokesForList?listID=' + listId);
     let htmlResult = await result.text();
     document.getElementById('jokeContainer').innerHTML = htmlResult
 
@@ -69,7 +69,7 @@ async function updateJokeFavouriteList(listId) {
 
 async function setFavouriteDDL() {
 
-    let result = await fetch('/Favourite/GetFavouriteListDDL');
+    let result = await advFetch('/Favourite/GetFavouriteListDDL');
     let htmlResult = await result.text();
     document.getElementById('dropdownContainer').innerHTML = htmlResult
 

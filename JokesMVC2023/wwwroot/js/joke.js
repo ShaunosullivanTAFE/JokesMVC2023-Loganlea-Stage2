@@ -14,7 +14,7 @@
 
 async function handleSearchInput() {
     let query = document.getElementById('txtSearch').value;
-    var result = await fetch("/Joke/JokeTablePartial?query=" + query);
+    var result = await advFetch("/Joke/JokeTablePartial?query=" + query);
     var htmlResult = await result.text();
     document.getElementById('JokeTableContainer').innerHTML = htmlResult;
 }
@@ -25,7 +25,7 @@ async function addToFavourites(jokeId) {
 
     $('#addJokeToListModal').modal('show');
 
-    let result = await fetch('/Favourite/GetFavouriteListDDL?jokeId='+jokeId);
+    let result = await advFetch('/Favourite/GetFavouriteListDDL?jokeId='+jokeId);
     let resultHtml = await result.text();
     document.getElementById('ddlContainer').innerHTML = resultHtml;
 
@@ -45,7 +45,7 @@ async function handleAddJokeToList(e) {
         JokeId: jokeId
     }
 
-    let result = await fetch('/Favourite/AddJokeToList', {
+    let result = await advFetch('/Favourite/AddJokeToList', {
         method: 'POST',
         headers: {
             'content-type': 'application/json'
@@ -91,7 +91,15 @@ function stopButtonSpinner() {
 async function deleteConfirm(id) {
     if (confirm("Delete Joke with ID: " + id + "?")) {
         showSpinner()
-        let result = await fetch('/Joke/Delete?id=' + id, { method: 'DELETE' });
+
+        let validationToken = document.querySelector('input[name="__RequestVerificationToken"]').value
+
+        let result = await advFetch('/Joke/Delete?id=' + id, {
+            method: 'DELETE',
+            headers: {
+                "RequestVerificationToken": validationToken
+            }
+        });
         hideSpinner()
         updateTable();
     }
@@ -99,19 +107,19 @@ async function deleteConfirm(id) {
 
 
 /*
-* The method below will retrieve the rendered HTML for the Joke Table via a fetch request
+* The method below will retrieve the rendered HTML for the Joke Table via a advFetch request
 * The data within the response will be extracted as text.
 * This 'text' will then replace the 'innerHTML' of the container div
 */
 
 async function updateTable() {
-    var result = await fetch("/Joke/JokeTablePartial");
+    var result = await advFetch("/Joke/JokeTablePartial");
     var htmlResult = await result.text();
     document.getElementById('JokeTableContainer').innerHTML = htmlResult;
 }
 
 async function showEditModal(id) {
-    let result = await fetch('/Joke/EditForm?id=' + id);
+    let result = await advFetch('/Joke/EditForm?id=' + id);
     let htmlResult = await result.text();
     document.getElementById('modalBody').innerHTML = htmlResult;
 
@@ -143,7 +151,7 @@ async function handleEditSubmit(e, id) {
         jokeAnswer: e.target["JokeAnswer"].value
     }
 
-    let result = await fetch('/Joke/Edit?id=' + id, {
+    let result = await advFetch('/Joke/Edit?id=' + id, {
         method: 'PUT',
         headers: {
             'content-type': 'application/json'
@@ -167,7 +175,7 @@ async function handleEditSubmit(e, id) {
 
 async function showCreateModal() {
     // Fetch the required partial view
-    var result = await fetch("/Joke/Create");
+    var result = await advFetch("/Joke/Create");
 
     // convert the response into html
     var htmlResult = await result.text();
@@ -203,11 +211,15 @@ async function showCreateModal() {
             JokeAnswer: e.target["JokeAnswer"].value
         }
 
+        let validationToken = document.querySelector('input[name="__RequestVerificationToken"]').value
+        console.log(validationToken)
+
         // POST the JSON object (stringified) to the /Create endpoint
-        let result = await fetch('/Joke/Create', {
+        let result = await advFetch('/Joke/Create', {
             method: "POST",
             headers: {
-                "content-type": "application/json"
+                "content-type": "application/json",
+                "RequestVerificationToken": validationToken
             },
             body: JSON.stringify(jokeCreate)
         });
@@ -233,7 +245,7 @@ async function showCreateModal() {
 
 async function showDetailsModal(id) {
 
-    let result = await fetch('/Joke/Details?id=' + id);
+    let result = await advFetch('/Joke/Details?id=' + id);
 
     let htmlResult = await result.text();
 

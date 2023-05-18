@@ -71,3 +71,24 @@ function ShowToast(text, duration, type){
     }).showToast();
 
 }
+
+function advFetch(url, options) {
+
+    let verificationToken = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? null;
+
+    // if the user hasn't provided options - create a new options object
+    if (!options) {
+        options = {};
+    }
+
+    // if the user hasn't provided headers, create a new headers object
+    if (!options.headers) {
+        options.headers = {}
+    };
+
+    if (verificationToken) {
+        options.headers["RequestVerificationToken"] = verificationToken;
+    }
+
+    return fetch(url, options);
+}
