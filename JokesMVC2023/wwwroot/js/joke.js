@@ -7,6 +7,9 @@
     document.getElementById('btnSearchClear').addEventListener('click', (e) => {
         handleSearchInput();
     })
+    document.getElementById('addJokeToListForm').addEventListener('submit', async (e) => {
+        handleAddJokeToList(e);
+    })
 })
 
 async function handleSearchInput() {
@@ -18,20 +21,21 @@ async function handleSearchInput() {
 
 async function addToFavourites(jokeId) {
 
+    sessionStorage.setItem('selectedJokeId', jokeId);
+
     $('#addJokeToListModal').modal('show');
 
-    let result = await fetch('/Favourite/GetFavouriteListDDL');
+    let result = await fetch('/Favourite/GetFavouriteListDDL?jokeId='+jokeId);
     let resultHtml = await result.text();
     document.getElementById('ddlContainer').innerHTML = resultHtml;
 
-    document.getElementById('addJokeToListForm').addEventListener('submit', async (e) => {
-        handleAddJokeToList(e, jokeId);
-    })
+
 }
 
-async function handleAddJokeToList(e, jokeId) {
+async function handleAddJokeToList(e) {
     e.preventDefault();
-
+    console.log('event fired')
+    let jokeId = sessionStorage.getItem('selectedJokeId');
     let listID = e.target['favouriteList'].selectedOptions[0].value
 
     if (listID == 0) { return; }
@@ -49,11 +53,15 @@ async function handleAddJokeToList(e, jokeId) {
         body: JSON.stringify(favListItem)
     });
 
-    if (result.ok) {
-        $('#addJokeToListModal').modal('hide');
-    } else {
+    if (result.status == 400) {
+        console.log(result)
         alert('The selected list already contains this joke')
+        return;
+    } else if (result.ok) {
+        $('#addJokeToListModal').modal('hide');
     }
+        
+    
 
 }
 

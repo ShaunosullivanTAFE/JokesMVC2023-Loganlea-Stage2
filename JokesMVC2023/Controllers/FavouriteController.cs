@@ -25,7 +25,7 @@ namespace JokesMVC2023.Controllers
             return View();
         }
 
-        public async Task<IActionResult> GetFavouriteListDDL()
+        public async Task<IActionResult> GetFavouriteListDDL(int? jokeId = null)
         {
             // retrieve ID from session
             int? id = HttpContext?.Session?.GetInt32("ID");
@@ -34,9 +34,22 @@ namespace JokesMVC2023.Controllers
                 return Unauthorized();
             }
 
-            // Use the ID to get all favourite lists
-            var betterList =  _context.FavouriteLists.Where(c => c.UserId == id).ToList();
-            var selectList = betterList.Select(c => new SelectListItem{
+            List<FavouriteList> filteredLists;
+
+            if (jokeId.HasValue)
+            {
+                filteredLists = _context.FavouriteLists.Include(c => c.ListItems)
+                                                            .Where(c => c.UserId == id && !c.ListItems.Any(c => c.JokeId == jokeId))
+                                                            .ToList();
+            }
+            else
+            {
+                filteredLists = _context.FavouriteLists.Where(c => c.UserId == id).ToList();
+            }
+
+
+
+            var selectList = filteredLists.Select(c => new SelectListItem{
                 Text = c.Name,
                 Value = c.Id.ToString()
             }).ToList();
